@@ -1,3 +1,17 @@
+this is a synced movie player.
+1) you upload your mp4 movie to aws s3
+2) set up your aws amplify with api+hosting+pubsub+auth
+3) go to the admin page and type out the file name of the movie.
+4) all the clients go to the main page and watch in sync. 
+
+
+
+
+
+
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
