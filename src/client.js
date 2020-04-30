@@ -5,14 +5,14 @@ import { graphqlOperation, API } from "aws-amplify";
 // import API, { graphqlOperation } from "@aws-amplify/api";
 import Storage from "@aws-amplify/storage";
 import Auth from "@aws-amplify/auth";
-import * as queries from "./graphql/queries";
+// import * as queries from "./graphql/queries";
 import Amplify from "aws-amplify";
 import awsconfig from "./aws-exports";
 import * as subscriptions from "./graphql/subscriptions";
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
 API.configure(awsconfig);
-
+// Storage.configure(awsconfig);
 class Client extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +23,6 @@ class Client extends React.Component {
       this.ref = React.createRef();
   }
   async doplay(input) {
-    console.log(input)
     if (input.value.data.onCreateWatchwithToonsMessages.command === "play") {
       let moviename = input.value.data.onCreateWatchwithToonsMessages.name;
       let file = await Storage.get(moviename, {
@@ -41,12 +40,18 @@ class Client extends React.Component {
     }
   }
 
+async getlist(){
+
+  // let s = await Storage.list('public/')
+  // console.log(s)
+}
   componentDidMount() {
-    const subscription = API.graphql(
+     API.graphql(
       graphqlOperation(subscriptions.onCreateWatchwithToonsMessages)
     ).subscribe({
       next: todoData => this.doplay(todoData)
     });
+      this.getlist()
   }
 
   render() {

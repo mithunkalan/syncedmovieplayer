@@ -3,14 +3,17 @@ import { graphqlOperation, API } from "aws-amplify";
 
 // import API, { graphqlOperation } from "@aws-amplify/api";
 import Auth from "@aws-amplify/auth";
-import * as queries from "./graphql/queries";
+// import * as queries from "./graphql/queries";
 import * as mutations from "./graphql/mutations";
 import Amplify from "aws-amplify";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import awsconfig from "./aws-exports";
+import Storage from "@aws-amplify/storage";
+
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
 API.configure(awsconfig);
+// Storage.configure(awsconfig);
 class Admin extends React.Component {
   constructor(props) {
     super(props);
@@ -22,17 +25,10 @@ class Admin extends React.Component {
   }
 
   async getmovies() {
-    try {
-      console.log(await Auth.currentAuthenticatedUser());
-      let api = await API.graphql(
-        graphqlOperation(queries.listWatchwithToonsMoviess, { limit: 10 })
-      );
-      console.log(api);
-      this.setState({ movies: api.data.listWatchwithToonsMoviess.items });
-    } catch (err) {
-      console.log(err);
-    }
+    let s = await Storage.list('')
+    this.setState({ movies: s.filter(z=>z.key!=="") });
   }
+  
 async stop() {
   await API.graphql(
     graphqlOperation(mutations.createWatchwithToonsMessages, {   input: {
@@ -67,8 +63,8 @@ async stop() {
         <button onClick={() => this.getmovies()}>getmovies</button>
         {this.state.movies.map((z, idx) => (
           <div key={idx}>
-            <button onClick={() => this.play(z.name)}>PLAY</button>
-            {z.name}
+            <button onClick={() => this.play(z.key)}>PLAY</button>
+            {z.key}
           </div>
         ))}
         <button onClick={() => this.stop()}>stop</button>
