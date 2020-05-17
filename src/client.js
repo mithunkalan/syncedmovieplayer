@@ -9,6 +9,10 @@ import * as subscriptions from "./graphql/subscriptions";
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
 API.configure(awsconfig);
+Storage.configure({
+  bucket:'watchwithtoonss3',
+  region:'af-south-1'
+});
 class Client extends React.Component {
   constructor(props) {
     super(props);

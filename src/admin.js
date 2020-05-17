@@ -3,11 +3,17 @@ import { graphqlOperation, API } from "aws-amplify";
 import Auth from "@aws-amplify/auth";
 import * as mutations from "./graphql/mutations";
 import Amplify from "aws-amplify";
+import Button from "@material-ui/core/Button";
+
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import awsconfig from "./aws-exports";
 import Storage from "@aws-amplify/storage";
 Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
+Storage.configure({
+  bucket: "watchwithtoonss3",
+  region: "af-south-1",
+});
 API.configure(awsconfig);
 class Admin extends React.Component {
   constructor(props) {
@@ -15,24 +21,25 @@ class Admin extends React.Component {
     this.state = {
       seek: 0,
       movies: [],
-
-      m:0,
-
+      m: 0,
       whatsplaying: "",
       time: 0,
       isOn: false,
       start: 0,
-      dragalong:false,
-      dragalongtime:60
+      dragalong: false,
+      dragalongtime: 60,
     };
     this.startTimer = this.startTimer.bind(this);
     this.stopTimer = this.stopTimer.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
-
   }
   async getmovies() {
-    let s = await Storage.list("");
-    this.setState({ movies: s.filter((z) => z.key !== "") });
+    try {
+      let s = await Storage.list("");
+      this.setState({ movies: s.filter((z) => z.key !== "") });
+    } catch (err) {
+      console.log(err);
+    }
   }
   startTimer() {
     this.setState({
@@ -41,12 +48,15 @@ class Admin extends React.Component {
       start: Date.now() - this.state.time,
     });
     this.timer = setInterval(() => {
-      if ((this.state.time/1000).toFixed(0) % this.state.dragalongtime ===0 && this.state.dragalong) {
-        console.log(this.state.time)
-         API.graphql(
+      if (
+        (this.state.time / 1000).toFixed(0) % this.state.dragalongtime === 0 &&
+        this.state.dragalong
+      ) {
+        console.log(this.state.time);
+        API.graphql(
           graphqlOperation(mutations.createWatchwithToonsMessages, {
             input: {
-              name: (this.state.time/1000).toFixed(0),
+              name: (this.state.time / 1000).toFixed(0),
               command: "seek",
             },
           })
@@ -109,24 +119,104 @@ class Admin extends React.Component {
 
   render() {
     return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <button onClick={() => Auth.signOut()}>signout</button>
-        <button onClick={() => this.getmovies()}>getmovies</button>
+      <div
+        style={{ }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => Auth.signOut()}
+        >
+          signout
+        </Button><br />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.getmovies()}
+        >
+          getmovies
+        </Button><br />
         {this.state.movies.map((z, idx) => (
           <div key={idx}>
-            <button onClick={() => this.doThing(z.key, "play")}>PLAY</button>
-            <button onClick={() => {this.doThing(z.key, "load")}}>LOAD</button>
-            <button onClick={() => this.doThing(z.key, "start")}>START</button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => this.doThing(z.key, "play")}
+            >
+              PLAY
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                this.doThing(z.key, "load");
+              }}
+            >
+              LOAD
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => this.doThing(z.key, "start")}
+            >
+              START
+            </Button>
             {z.key}
           </div>
         ))}
-        <button onClick={() => this.doThing("", "stop")}>stop</button>
-        <button onClick={() => this.doThing("", "pause")}>pause</button>
-        <button onClick={() => this.doThing("", "unpause")}>unpause</button>
-        <button onClick={() => this.doThing("", "checkbuffer")}>check buffer</button>
-        <button onClick={() => this.setState({dragalong:!this.state.dragalong})}>toggle drag along</button>
-        <button onClick={() => this.setState({dragalongtime:this.state.dragalong+30})}>drag along +30</button>
-        <button onClick={() => this.setState({dragalongtime:this.state.dragalong-30})}>drag along -30</button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.doThing("", "stop")}
+        >
+          stop
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.doThing("", "pause")}
+        >
+          pause
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.doThing("", "unpause")}
+        >
+          unpause
+        </Button><br />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.doThing("", "checkbuffer")}
+        >
+          check buffer
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.setState({ dragalong: !this.state.dragalong })}
+        >
+          toggle drag along
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            this.setState({ dragalongtime: this.state.dragalongtime + 30 })
+          }
+        >
+          drag along +30
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            this.setState({ dragalongtime: this.state.dragalongtime - 30 })
+          }
+        >
+          drag along -30
+        </Button><br />
         <input
           value={this.state.seek}
           onChange={(change) =>
@@ -134,21 +224,30 @@ class Admin extends React.Component {
           }
         ></input>
         <input
-
-          value={this.state.seek/60}
+          value={this.state.seek / 60}
           onChange={(change) =>
-            this.setState({ seek: parseInt(change.target.value)*60 })
+            this.setState({ seek: parseInt(change.target.value) * 60 })
           }
         ></input>
-        <button onClick={() => this.doThing(this.state.seek, "seek")}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            this.doThing(this.state.seek, "seek");
+            this.setState({
+              time: this.state.seek * 1000,
+              start: Date.now() - this.state.seek * 1000,
+            });
+          }}
+        >
           seek
-        </button>
+        </Button><br />
         currently playing :{this.state.whatsplaying}
         <br />
         time:{(this.state.time / 1000).toFixed(0)}
-        <br/>
-        drag along: {this.state.dragalong?"true":"false"}
-        <br/>
+        <br />
+        drag along: {this.state.dragalong ? "true" : "false"}
+        <br />
         drag along time: {this.state.dragalongtime}
       </div>
     );

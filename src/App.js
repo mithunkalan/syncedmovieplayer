@@ -15,10 +15,12 @@ class App extends React.Component {
 
   render() {
       return (
+
         <Router>
           <Route path="/" exact component={Client} />
           <Route path="/bossman" exact component={Admin} />
           </Router>
+        
       );
   }
 }
