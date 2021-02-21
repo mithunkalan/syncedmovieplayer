@@ -28,14 +28,14 @@ class Client extends React.Component {
     if (input.value.data.onCreateWatchwithToonsMessages.command === "play") {
       let moviename = input.value.data.onCreateWatchwithToonsMessages.name;
       let file = await Storage.get(moviename, {
-        expires: 9999999,
+        expires: 10800,
       });
       this.setState({ filer: file, nomovies: false, playing: true ,caught:true});
     }
     if (input.value.data.onCreateWatchwithToonsMessages.command === "load") {
       let moviename = input.value.data.onCreateWatchwithToonsMessages.name;
       let file = await Storage.get(moviename, {
-        expires: 9999999,
+        expires: 10800,
       });
       this.setState({ filer: file, nomovies: false, playing: false });
     }
@@ -68,7 +68,7 @@ class Client extends React.Component {
       let inn = input.value.data.onCreateWatchwithToonsMessages.name;
       let moviename = inn.split("|")[0];
       let file = await Storage.get(moviename, {
-        expires: 9999999,
+        expires: 10800,
       });
       let times = parseInt(inn.split("|")[1]);
       this.setState({ filer: file, nomovies: false, playing: true ,caught:true});
@@ -111,7 +111,7 @@ class Client extends React.Component {
             width={"100%"}
             height={"100vh"}
             volume={0}
-            muted
+muted
           />
         </div>
       );

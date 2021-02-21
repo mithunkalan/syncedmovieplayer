@@ -5,7 +5,7 @@ import * as mutations from "./graphql/mutations";
 import Amplify from "aws-amplify";
 import Button from "@material-ui/core/Button";
 import Snackbar from "@material-ui/core/Snackbar";
-import ImageUploader from "react-images-upload";
+// import ImageUploader from "react-images-upload";
 
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import awsconfig from "./aws-exports";
@@ -171,31 +171,33 @@ class Admin extends React.Component {
             horizontal: "left",
           }}
           open={this.state.statusbar}
-          autoHideDuration={3000}
+          autoHideDuration={30000}
           onClose={() => this.setState({ statusbar: false })}
           ContentProps={{
             "aria-describedby": "message-id",
           }}
           message={<span id="message-id">{this.state.statusbartext}</span>}
         />
-        <ImageUploader
-          key={Math.random()}
-          buttonText="upload filim"
-          onChange={(pictureFiles, pictureDataURLs) => {
-            this.upfile(pictureFiles[0]);
-            // console.log(pictureDataURLs[0]);
-          }}
-          imgExtension={[".mp4", ".gif"]}
-          maxFileSize={102428800000}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => Auth.signOut()}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => Auth.signOut()}
         >
-          signout
-        </Button>
-        <br />
+        signout
+      </Button>
+      <br />
+      <br />
+      <br />
+      upload filim
+      <input
+        type="file"
+          name="upload filim"
+          onChange={pictureFiles => {
+            console.log(pictureFiles);
+            this.upfile(pictureFiles.target.files[0]);
+          }}
+        />
+      <br />
         <Button
           variant="contained"
           color="primary"
