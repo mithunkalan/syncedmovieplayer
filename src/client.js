@@ -10,8 +10,8 @@ Amplify.configure(awsconfig);
 Auth.configure(awsconfig);
 API.configure(awsconfig);
 Storage.configure({
-  bucket:'watchwithtoonss3',
-  region:'af-south-1'
+  bucket: "watchwithtoonss3",
+  region: "af-south-1",
 });
 class Client extends React.Component {
   constructor(props) {
@@ -20,6 +20,7 @@ class Client extends React.Component {
     this.state = {
       nomovies: true,
       playing: true,
+      caught:false
     };
     this.ref = React.createRef();
   }
@@ -29,7 +30,7 @@ class Client extends React.Component {
       let file = await Storage.get(moviename, {
         expires: 9999999,
       });
-      this.setState({ filer: file, nomovies: false, playing: true });
+      this.setState({ filer: file, nomovies: false, playing: true ,caught:true});
     }
     if (input.value.data.onCreateWatchwithToonsMessages.command === "load") {
       let moviename = input.value.data.onCreateWatchwithToonsMessages.name;
@@ -53,12 +54,25 @@ class Client extends React.Component {
     if (input.value.data.onCreateWatchwithToonsMessages.command === "pause") {
       this.setState({ playing: false });
     }
-    if (input.value.data.onCreateWatchwithToonsMessages.command === "checkbuffer") {
-      console.log(this.ref)
-      console.log(this.ref.current.getSecondsLoaded())
+    if (
+      input.value.data.onCreateWatchwithToonsMessages.command === "checkbuffer"
+    ) {
+      console.log(this.ref);
+      console.log(this.ref.current.getSecondsLoaded());
     }
     if (input.value.data.onCreateWatchwithToonsMessages.command === "unpause") {
-      this.setState({ playing: true});
+      this.setState({ playing: true });
+    }
+    if (input.value.data.onCreateWatchwithToonsMessages.command === "catchup" && !this.state.caught) {
+
+      let inn = input.value.data.onCreateWatchwithToonsMessages.name;
+      let moviename = inn.split("|")[0];
+      let file = await Storage.get(moviename, {
+        expires: 9999999,
+      });
+      let times = parseInt(inn.split("|")[1]);
+      this.setState({ filer: file, nomovies: false, playing: true ,caught:true});
+      this.ref.current.seekTo(times, "seconds");
     }
   }
 
